@@ -7,7 +7,7 @@ This task is performed OUTSIDE of Terraform and from the master account where th
 The Account Wiper solution is principly achieved by an Open Source project called AWS-Nuke, a command line utility that iterates through an AWS account and destroys all resources and data that it has been intructed to delete.
 The solution achieves this objective by executing the following actions:
 - Launching a lambda function from the AWS Service Catalog "AWS Wiper" with the service catalog product supplied inputs.
-- Since an AWS-Nuke run job can and will likely run longer than an AWS lambda job is permitted to execute, this lambda function servers the following functions:
+- Since an AWS-Nuke run job can and will likely run longer than an AWS lambda job is permitted to execute, this lambda function serves the following functions:
   1. Cleaning up account wiper objects from any prior run for a given account in the master account.
   2. Creating a Codebuild project that ultimately creates and launches a AWS Linux EC2 docker image with required code and software.
   3. Launching the Codebuild project to affect actual account wipe functionality.
