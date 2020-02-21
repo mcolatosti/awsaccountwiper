@@ -32,8 +32,8 @@ accounts:
       - "terraform_writer"
       - "OrganizationAccountAccessRole"
       IAMRolePolicyAttachment:
-      - "bal_terraform_reader -> ReadOnlyAccess"
-      - "bal_terraform_writer -> AdministratorAccess"
+      - "terraform_reader -> ReadOnlyAccess"
+      - "terraform_writer -> AdministratorAccess"
       IAMRolePolicy:
-      - "bal_terraform_reader -> terraform_reader"
-      - "bal_terraform_writer -> terraform_writer"
+      - "terraform_reader -> terraform_reader"
+      - "terraform_writer -> terraform_writer"
