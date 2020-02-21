@@ -1,0 +1,39 @@
+regions:
+- "global" # This is for all global resource types e.g. IAM
+- "us-east-1"
+- "us-east-2"
+- "us-west-1"
+- "us-west-2"
+- "ca-central-1"
+- "eu-west-1"
+- "eu-west-2"
+- "eu-west-3"
+- "eu-central-1"
+- "ap-northeast-1"
+- "ap-northeast-2"
+- "ap-northeast-3"
+- "ap-southeast-1"
+- "ap-southeast-2"
+- "ap-south-1"
+- "sa-east-1"
+- "cn-north-1"
+- "cn-northwest-1"
+
+
+account-blacklist:
+- 111111111111 #Your Organization Master Account
+- 222222222222 #Other accounts to not permit delete, one line for each.
+
+accounts:
+  000000000000: #Resources not to purge from account to be wiped
+    filters:
+      IAMRole:
+      - "terraform_reader"
+      - "terraform_writer"
+      - "OrganizationAccountAccessRole"
+      IAMRolePolicyAttachment:
+      - "bal_terraform_reader -> ReadOnlyAccess"
+      - "bal_terraform_writer -> AdministratorAccess"
+      IAMRolePolicy:
+      - "bal_terraform_reader -> terraform_reader"
+      - "bal_terraform_writer -> terraform_writer"

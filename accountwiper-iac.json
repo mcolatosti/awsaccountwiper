@@ -1,0 +1,108 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Account Wiper Template.",
+    "Metadata": {
+        "AWS::CloudFormation::Interface": {
+            "ParameterGroups": [
+                {
+                    "Label": {
+                        "default": "Account Wiping Parameters"
+                    },
+                    "Parameters": [
+                        "wipeaccountid"
+                    ]
+                }
+            ],
+			"ParameterLabels" : {	
+				"wipeaccountid" : { "default" : "Danger: Account ID of account to be wiped" }
+			}
+        }
+    },
+    "Parameters": {
+        "wipeaccountid": {
+            "Description": "AWS Account number of the existing AWS Account to wipe all data and configuration",
+            "Type": "String",
+            "AllowedPattern": "\\d{12}",
+            "ConstraintDescription": "Provide the account number, constrained to 12 digit characters only."
+        }
+    },
+    "Resources": {
+        "AccountWiperLambda": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+                "Handler": "AccountWiperLambda.main",
+                "Runtime": "python3.6",
+                "Role": {
+                    "Fn::GetAtt": [
+                        "LambdaExecuteRole",
+                        "Arn"
+                    ]
+                },
+                "Timeout": 900,
+                "TracingConfig": {
+                    "Mode": "Active"
+                },
+                "Code": {
+                    "S3Bucket": "iac-appcatalog",
+                    "S3Key": "AccountWiperLambda.zip"
+                },
+                "Environment": {
+                    "Variables": {
+                        "wipeaccountid": {
+                            "Ref": "wipeaccountid"
+                        }
+                    }
+                }
+            }
+        },
+        "LambdaExecuteRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": {
+                        "Effect": "Allow",
+                        "Principal": {
+                            "Service": [
+                                "lambda.amazonaws.com"
+                            ]
+                        },
+                        "Action": [
+                            "sts:AssumeRole"
+                        ]
+                    }
+                },
+                "Path": "/",
+                "Policies": [
+                    {
+                        "PolicyName": "LambdaAccessRole",
+                        "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": {
+                                "Effect": "Allow",
+                                "Action": "*",
+                                "Resource": "*"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        "TriggerLambda": {
+            "Type": "Custom::TriggerLambda",
+            "DeletionPolicy": "Retain",
+            "DependsOn": [
+                "AccountWiperLambda",
+                "LambdaExecuteRole"
+            ],
+            "Properties": {
+                "ServiceToken": {
+                    "Fn::GetAtt": [
+                        "AccountWiperLambda",
+                        "Arn"
+                    ]
+                }
+            }
+        }
+    }
+}
